@@ -1,52 +1,17 @@
-# Prerequisites
-*.d
+# Excluye carpetas de MCUXpresso Workspace
+*.metadata
+*.mcuxpressoide_packages_support
+*.launch
 
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
+# Excluye SDK para tarjeta FRDM-KL02Z
+/SDK_2.3.1_FRDM-KL02Z.zip
 
-# Linker output
-*.ilk
-*.map
-*.exp
+# Excluye carpeta temporal Debug/Release
+/System_CS/Debug/
+/System_CS/Release/
 
-# Precompiled Headers
-*.gch
-*.pch
+# Excluye carpeta html de doxygen
+/System_CS/doxygen/html/
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
-
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+# Excluye carpeta FreeRTOS_TAD_logs
+/FreeRTOS_TAD_logs/
