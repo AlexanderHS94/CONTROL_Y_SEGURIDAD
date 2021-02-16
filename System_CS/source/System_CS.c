@@ -39,13 +39,14 @@
 #include "clock_config.h"
 #include "MKL02Z4.h"
 #include "fsl_debug_console.h"
+
 /* TODO: insert other include files here. */
 /*******************************************************************************
  * Includes Librerias SDK_HALL
 ******************************************************************************/
 #include "sdk_hal_gpio.h"
 #include "sdk_hal_uart0.h"
-
+#include "sdk_hal_i2c0.h"
 /*******************************************************************************
  * Includes Librerias SDK para optimizacion de codigo
 ******************************************************************************/
@@ -78,6 +79,11 @@ int main(void) {
 
     //inicializa puerto UART0 y solo avanza si es exitoso el proceso
         if(uart0Inicializar(115200)!=kStatus_Success){	//115200bps
+        	return 0 ;
+        }
+
+    //inicializa puerto I2C0 y solo avanza si es exitoso el proceso
+        if(i2c0MasterInit(100000)!=kStatus_Success){	//100kbps
         	return 0 ;
         }
 
