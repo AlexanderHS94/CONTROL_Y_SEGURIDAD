@@ -40,8 +40,26 @@
 #include "MKL02Z4.h"
 #include "fsl_debug_console.h"
 /* TODO: insert other include files here. */
+/*******************************************************************************
+ * Includes Librerias SDK_HALL
+******************************************************************************/
+#include "sdk_hal_gpio.h"
+
+
+/*******************************************************************************
+ * Includes Librerias SDK_MIDDLEWARE
+******************************************************************************/
+#include "sdk_mdlw_leds.h"
+
 
 /* TODO: insert other definitions and declarations here. */
+
+void waytTime(void) {
+	uint32_t tiempo = 0xFFFFF;
+	do {
+		tiempo--;
+	} while (tiempo != 0x0000);
+}
 
 /*
  * @brief   Application entry point.
@@ -60,13 +78,18 @@ int main(void) {
     PRINTF("Hello World\n");
 
     /* Force the counter to be placed into memory. */
-    volatile static int i = 0 ;
     /* Enter an infinite loop, just incrementing a counter. */
     while(1) {
-        i++ ;
-        /* 'Dummy' NOP to allow source level single stepping of
-            tight while() loop */
-        __asm volatile ("nop");
+    	waytTime();		//base de tiempo fija aproximadamente 200ms
+
+
+    	encenderLedAzul();
+		toggleLedRojo();
+		waytTime();
+		apagarLedRojo();
+		apagarLedAzul();
+    	//Se enciende LED verde
+    	encenderLedVerde();
     }
     return 0 ;
 }
