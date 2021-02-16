@@ -44,10 +44,10 @@
  * Includes Librerias SDK_HALL
 ******************************************************************************/
 #include "sdk_hal_gpio.h"
-
+#include "sdk_hal_uart0.h"
 
 /*******************************************************************************
- * Includes Librerias SDK_MIDDLEWARE
+ * Includes Librerias SDK para optimizacion de codigo
 ******************************************************************************/
 #include "sdk_mdlw_leds.h"
 
@@ -75,7 +75,11 @@ int main(void) {
     BOARD_InitDebugConsole();
 #endif
 
-    PRINTF("Hello World\n");
+
+    //inicializa puerto UART0 y solo avanza si es exitoso el proceso
+        if(uart0Inicializar(115200)!=kStatus_Success){	//115200bps
+        	return 0 ;
+        }
 
     /* Force the counter to be placed into memory. */
     /* Enter an infinite loop, just incrementing a counter. */
