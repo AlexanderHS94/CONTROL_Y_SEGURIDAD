@@ -51,9 +51,16 @@
  * Includes Librerias SDK para optimizacion de codigo
 ******************************************************************************/
 #include "sdk_mdlw_leds.h"
-
+#include "sdk_pph_ec25au.h"
 
 /* TODO: insert other definitions and declarations here. */
+/*******************************************************************************
+ * Local vars
+ ******************************************************************************/
+
+uint8_t mensaje_de_texto[]="Hola desde EC25";
+
+
 
 void waytTime(void) {
 	uint32_t tiempo = 0xFFFFF;
@@ -66,6 +73,8 @@ void waytTime(void) {
  * @brief   Application entry point.
  */
 int main(void) {
+
+	uint8_t estado_actual_ec25;
 
   	/* Init board hardware. */
     BOARD_InitBootPins();
@@ -86,20 +95,43 @@ int main(void) {
         if(i2c0MasterInit(100000)!=kStatus_Success){	//100kbps
         	return 0 ;
         }
+    //inicializa todas las funciones necesarias para trabajar con el modem EC25
+    ec25Inicializacion();
+    ec25EnviarMensajeDeTexto(&mensaje_de_texto[0], sizeof(mensaje_de_texto));
 
     /* Force the counter to be placed into memory. */
     /* Enter an infinite loop, just incrementing a counter. */
     while(1) {
     	waytTime();		//base de tiempo fija aproximadamente 200ms
 
+		estado_actual_ec25 = ec25Polling();	//actualiza maquina de estados encargada de avanzar en el proceso interno del MODEM
+											//retorna el estado actual de la FSM
 
-    	encenderLedAzul();
-		toggleLedRojo();
-		waytTime();
-		apagarLedRojo();
-		apagarLedAzul();
-    	//Se enciende LED verde
-    	encenderLedVerde();
+    	switch(estado_actual_ec25){
+    	case kFSM_RESULTADO_ERROR:
+    		toggleLedRojo();
+    		apagarLedVerde();
+    		apagarLedAzul();
+    		break;
+
+    	case kFSM_RESULTADO_EXITOSO:
+    		apagarLedRojo();
+    		toggleLedVerde();
+    		apagarLedAzul();
+    		break;
+
+    	case kFSM_RESULTADO_ERROR_RSSI:
+    		toggleLedRojo();
+    		apagarLedVerde();
+    		toggleLedAzul();
+    		break;
+
+    	default:
+    		apagarLedRojo();
+    		apagarLedVerde();
+    		toggleLedAzul();
+    		break;
+    	}
     }
     return 0 ;
 }
