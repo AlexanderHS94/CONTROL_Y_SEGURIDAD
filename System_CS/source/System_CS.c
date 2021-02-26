@@ -135,6 +135,9 @@ int main(void) {
     		printf("ADC ->");
     		printf("PTB8:%d ",adc_dato);	//imprime resultado ADC
     		printf("\r\n");	//Imprime cambio de linea
+    		adc_dato=(1.1*adc_dato*100.0)/4095.0;
+    		printf("tempC :%d ", adc_dato);
+    		printf("\r\n");
     	}
 #endif
 
