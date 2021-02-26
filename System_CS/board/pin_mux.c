@@ -32,6 +32,7 @@ void BOARD_InitBootPins(void)
 {
     BOARD_InitPins();
     LEDs_InitPins();
+    ADC_InitPins();
 }
 
 /* clang-format off */
@@ -151,6 +152,41 @@ void LEDs_InitPins(void)
                                          kPORT_MuxAsGpio};
     /* PORTB7 (pin 2) is configured as PTB7 */
     PORT_SetPinConfig(LEDS_INITPINS_LED_GREEN_PORT, LEDS_INITPINS_LED_GREEN_PIN, &LED_GREEN);
+}
+
+/* clang-format off */
+/*
+ * TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+ADC_InitPins:
+- options: {callFromInitBoot: 'true', coreID: core0, enableClock: 'true'}
+- pin_list:
+  - {pin_num: '11', peripheral: ADC0, signal: 'SE, 14', pin_signal: ADC0_SE11/PTB8, slew_rate: slow, open_drain: disable, drive_strength: low, pull_select: up, pull_enable: disable,
+    passive_filter: disable}
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
+ */
+/* clang-format on */
+
+/* FUNCTION ************************************************************************************************************
+ *
+ * Function Name : ADC_InitPins
+ * Description   : Configures pin routing and optionally pin electrical features.
+ *
+ * END ****************************************************************************************************************/
+void ADC_InitPins(void)
+{
+    /* Port B Clock Gate Control: Clock enabled */
+    CLOCK_EnableClock(kCLOCK_PortB);
+
+    const port_pin_config_t portb8_pin11_config = {/* Internal pull-up/down resistor is disabled */
+                                                   kPORT_PullDisable,
+                                                   /* Passive filter is disabled */
+                                                   kPORT_PassiveFilterDisable,
+                                                   /* Low drive strength is configured */
+                                                   kPORT_LowDriveStrength,
+                                                   /* Pin is configured as ADC0_SE11 */
+                                                   kPORT_PinDisabledOrAnalog};
+    /* PORTB8 (pin 11) is configured as ADC0_SE11 */
+    PORT_SetPinConfig(PORTB, 8U, &portb8_pin11_config);
 }
 /***********************************************************************************************************************
  * EOF
