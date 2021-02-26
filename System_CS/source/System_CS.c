@@ -47,6 +47,7 @@
 #include "sdk_hal_gpio.h"
 #include "sdk_hal_uart0.h"
 #include "sdk_hal_i2c0.h"
+#include "sdk_hal_adc.h"
 /*******************************************************************************
  * Includes Librerias SDK para optimizacion de codigo
 ******************************************************************************/
@@ -54,8 +55,10 @@
 #include "sdk_pph_ec25au.h"
 
 /* TODO: insert other definitions and declarations here. */
-/*******************************************************************************
- * Local vars
+/*******************************************************************************/
+ #define HABILITAR_ENTRADA_ADC_PTB8	1
+
+ /* Local vars
  ******************************************************************************/
 
 uint8_t mensaje_de_texto[]="Hola desde EC25";
@@ -74,7 +77,10 @@ void waytTime(void) {
  */
 int main(void) {
 
-	uint8_t estado_actual_ec25;
+
+	 uint32_t adc_dato;
+	 uint8_t adc_base_de_tiempo=0;
+	 uint8_t estado_actual_ec25;
 
   	/* Init board hardware. */
     BOARD_InitBootPins();
@@ -101,11 +107,36 @@ int main(void) {
 
     /* Force the counter to be placed into memory. */
     /* Enter an infinite loop, just incrementing a counter. */
+
+#if HABILITAR_ENTRADA_ADC_PTB8
+    //Inicializa conversor analogo a digital
+    //Se debe usar  PinsTools para configurar los pines que van a ser analogicos
+    printf("Inicializa ADC:");
+    if(adcInit()!=kStatus_Success){
+    	printf("Error");
+    	return 0 ;
+    }
+    printf("OK\r\n");
+#endif
+
+
     while(1) {
     	waytTime();		//base de tiempo fija aproximadamente 200ms
 
 		estado_actual_ec25 = ec25Polling();	//actualiza maquina de estados encargada de avanzar en el proceso interno del MODEM
-											//retorna el estado actual de la FSM
+		//retorna el estado actual de la FSM
+
+
+#if HABILITAR_ENTRADA_ADC_PTB8
+    	adc_base_de_tiempo++;//incrementa base de tiempo para tomar una lectura ADC
+    	if(adc_base_de_tiempo>10){	// >10 equivale aproximadamente a 2s
+    		adc_base_de_tiempo=0;	//reinicia contador de tiempo
+    		adcTomarCaptura(PTB8_ADC0_SE11_CH14, &adc_dato);	//inicia lectura por ADC y guarda en variable adc_dato
+    		printf("ADC ->");
+    		printf("PTB8:%d ",adc_dato);	//imprime resultado ADC
+    		printf("\r\n");	//Imprime cambio de linea
+    	}
+#endif
 
     	switch(estado_actual_ec25){
     	case kFSM_RESULTADO_ERROR:
@@ -132,6 +163,7 @@ int main(void) {
     		toggleLedAzul();
     		break;
     	}
-    }
+
     return 0 ;
+}
 }
