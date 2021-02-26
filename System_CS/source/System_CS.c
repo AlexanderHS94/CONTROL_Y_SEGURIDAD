@@ -139,6 +139,7 @@ int main(void) {
     		printf("tempC :%d ", adc_dato);
     		printf("\r\n");
     	}
+
 #endif
 
     	switch(estado_actual_ec25){
@@ -166,7 +167,7 @@ int main(void) {
     		toggleLedAzul();
     		break;
     	}
-
+    }
     return 0 ;
 }
-}
+
