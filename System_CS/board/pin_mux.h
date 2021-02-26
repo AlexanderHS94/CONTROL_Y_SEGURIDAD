@@ -100,6 +100,12 @@ void BOARD_InitPins(void);
  */
 void LEDs_InitPins(void);
 
+/*!
+ * @brief Configures pin routing and optionally pin electrical features.
+ *
+ */
+void ADC_InitPins(void);
+
 #if defined(__cplusplus)
 }
 #endif
