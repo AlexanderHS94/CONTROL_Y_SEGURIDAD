@@ -11,6 +11,7 @@
  ******************************************************************************/
 #include "sdk_hal_uart0.h"
 #include "fsl_lpsci.h"
+
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -69,12 +70,17 @@ status_t uart0Inicializar(uint32_t baud_rate) {
 	lpsci_config_t config;
 	status_t status;
 
+	CLOCK_SetLpsci0Clock(0x1U); /* select FLL clock for LPSCI */
+
 	LPSCI_GetDefaultConfig(&config);
 	config.baudRate_Bps = baud_rate;
 	config.enableTx = true;
 	config.enableRx = true;
 
 	status=LPSCI_Init(UART0, &config, CLOCK_GetFreq(kCLOCK_McgFllClk));
+	LPSCI_EnableTx(UART0, true);
+	LPSCI_EnableRx(UART0, true);
+
 	if (status != kStatus_Success)
 		return (status);
 
