@@ -12,6 +12,7 @@
  * Includes
  ******************************************************************************/
 #include "fsl_common.h"
+#include "fsl_lpsci.h"
 
 /*!
  * @addtogroup HAL
@@ -26,6 +27,7 @@
  ******************************************************************************/
 /*! @brief Tamaño de buffer circular para recibir datos por UART (Unit: Byte). */
 #define LONGITUD_BUFFER_CIRCULAR 	100
+
 
 /*******************************************************************************
  * External vars
@@ -75,6 +77,20 @@ uint16_t uart0CuantosDatosHayEnBuffer(void);
  * @endcode
  */
 status_t uart0LeerByteDesdeBuffer(uint8_t *nuevo_byte);
+
+/*--------------------------------------------*/
+/*!
+ * @brief Imprime por puerto UART0 la cantidad de bytes indicados del buffer
+ *
+ * @param buffer	apuntador de memoria donde almacena buffer a enviar
+ * @param cantidad	cantidad de bytesa enviar
+ *
+ * @endcode
+ */
+static inline void uart0ImprimirMensaje(uint8_t* buffer, uint8_t cantidad){
+	LPSCI_WriteBlocking(UART0, buffer, cantidad);
+}
+
 
 /** @} */ // end of UART0 group
 /** @} */ // end of HAL group

@@ -78,7 +78,7 @@ void waytTime(void) {
 int main(void) {
 
 
-	 uint32_t adc_dato;
+	 float adc_dato;
 	 uint8_t adc_base_de_tiempo=0;
 	 uint8_t estado_actual_ec25;
 
@@ -136,8 +136,10 @@ int main(void) {
     		printf("PTB8:%d ",adc_dato);	//imprime resultado ADC
     		printf("\r\n");	//Imprime cambio de linea
     		adc_dato=(1.1*adc_dato*100.0)/4095.0;
-    		printf("tempC :%d ", adc_dato);
+    		printf("tempC :%f ", adc_dato);
     		printf("\r\n");
+
+    		lm35sensor(adc_dato);
     	}
 
 #endif
