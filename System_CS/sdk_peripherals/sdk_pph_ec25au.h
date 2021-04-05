@@ -71,6 +71,7 @@ kFSM_ENVIANDO_CSQ,
 kFSM_ESPERANDO_RESPUESTA,
 kFSM_RESULTADO_ERROR,
 kFSM_RESULTADO_EXITOSO,
+kFSM_RESULTADO_ERROR_MQTT,
 kFSM_PROCESANDO_RESPUESTA,
 kFSM_RESULTADO_ERROR_RSSI,
 kFSM_RESULTADO_ERROR_QMTOPEN,
@@ -78,7 +79,7 @@ kFSM_RESULTADO_ERROR_QIACT_1,
 kFSM_RESULTADO_ERROR_QMTPUB_T,
 };
 
-#define EC25_TIEMPO_MAXIMO_ESPERA	3		//Tiempo maximo que espera modem por respuesta
+#define EC25_TIEMPO_MAXIMO_ESPERA	4		//Tiempo maximo que espera modem por respuesta
 #define EC25_RSSI_MINIMO_ACEPTADO	20		//RSSI minimo aceptado segun tabla de fabricante
 /*******************************************************************************
  * External vars
@@ -92,9 +93,12 @@ kFSM_RESULTADO_ERROR_QMTPUB_T,
  * Public Prototypes
  ******************************************************************************/
 status_t ec25Inicializacion(void);
+status_t ec25InicializarMQTT(void);
 status_t ec25EnviarMensajeDeTexto(uint8_t *mensaje, uint8_t size_mensaje );
 uint8_t ec25Polling(void);
 status_t lm35sensor(float adc_dato);
+status_t Reenvio_de_Peticion(void);
+status_t Reinicio_Por_Errores(void);
 /** @} */ // end of X group
 /** @} */ // end of X group
 

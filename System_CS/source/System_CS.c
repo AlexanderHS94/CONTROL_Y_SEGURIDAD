@@ -79,6 +79,7 @@ int main(void) {
 
 
 	 float adc_dato;
+	 float SensorTemp;
 	 uint8_t adc_base_de_tiempo=0;
 	 uint8_t estado_actual_ec25;
 
@@ -103,6 +104,7 @@ int main(void) {
         }
     //inicializa todas las funciones necesarias para trabajar con el modem EC25
     ec25Inicializacion();
+    ec25InicializarMQTT();
     ec25EnviarMensajeDeTexto(&mensaje_de_texto[0], sizeof(mensaje_de_texto));
 
     /* Force the counter to be placed into memory. */
@@ -111,20 +113,17 @@ int main(void) {
 #if HABILITAR_ENTRADA_ADC_PTB8
     //Inicializa conversor analogo a digital
     //Se debe usar  PinsTools para configurar los pines que van a ser analogicos
-    printf("Inicializa ADC:");
+    printf("Inicializa ADC \r\n");
     if(adcInit()!=kStatus_Success){
     	printf("Error");
     	return 0 ;
     }
-    printf("OK\r\n");
+    //printf("OK\r\n");
 #endif
 
 
     while(1) {
     	waytTime();		//base de tiempo fija aproximadamente 200ms
-
-		estado_actual_ec25 = ec25Polling();	//actualiza maquina de estados encargada de avanzar en el proceso interno del MODEM
-		//retorna el estado actual de la FSM
 
 
 #if HABILITAR_ENTRADA_ADC_PTB8
@@ -132,19 +131,21 @@ int main(void) {
     	if(adc_base_de_tiempo>10){	// >10 equivale aproximadamente a 2s
     		adc_base_de_tiempo=0;	//reinicia contador de tiempo
     		adcTomarCaptura(PTB8_ADC0_SE11_CH14, &adc_dato);	//inicia lectura por ADC y guarda en variable adc_dato
-    		printf("ADC ->");
-    		printf("PTB8:%d ",adc_dato);	//imprime resultado ADC
-    		printf("\r\n");	//Imprime cambio de linea
-    		adc_dato=(1.1*adc_dato*100.0)/4095.0;
-    		printf("tempC :%f ", adc_dato);
-    		printf("\r\n");
+    		//printf("ADC ->");
+    		//printf("PTB8:%d ",adc_dato);	//imprime resultado ADC
+    		//printf("\r\n");	//Imprime cambio de linea
+    		SensorTemp=(1.1*adc_dato*100.0)/4095.0;
+    		//printf("tempC :%f ", adc_dato);
+    		//printf("\r\n");
 
-    		lm35sensor(adc_dato);
+
     	}
 
 #endif
+    	estado_actual_ec25 = ec25Polling();	//actualiza maquina de estados encargada de avanzar en el proceso interno del MODEM
 
     	switch(estado_actual_ec25){
+
     	case kFSM_RESULTADO_ERROR:
     		toggleLedRojo();
     		apagarLedVerde();
@@ -162,12 +163,16 @@ int main(void) {
     		apagarLedVerde();
     		toggleLedAzul();
     		break;
+    	case kFSM_ENVIANDO_MQTT_MSJ_T:
+    		lm35sensor(SensorTemp);
+    		break;
 
     	default:
     		apagarLedRojo();
     		apagarLedVerde();
     		toggleLedAzul();
     		break;
+
     	}
     }
     return 0 ;
