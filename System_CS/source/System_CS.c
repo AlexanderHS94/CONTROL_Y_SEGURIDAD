@@ -78,9 +78,10 @@ void waytTime(void) {
 int main(void) {
 
 
-	 float adc_dato;
+	 uint32_t adc_dato2;
 	 float SensorTemp;
-	 uint8_t adc_base_de_tiempo=0;
+	 uint32_t conv;
+	 uint8_t adc_base_de_tiempos2=0;
 	 uint8_t estado_actual_ec25;
 
   	/* Init board hardware. */
@@ -125,23 +126,24 @@ int main(void) {
     while(1) {
     	waytTime();		//base de tiempo fija aproximadamente 200ms
 
-
 #if HABILITAR_ENTRADA_ADC_PTB8
-    	adc_base_de_tiempo++;//incrementa base de tiempo para tomar una lectura ADC
-    	if(adc_base_de_tiempo>10){	// >10 equivale aproximadamente a 2s
-    		adc_base_de_tiempo=0;	//reinicia contador de tiempo
-    		adcTomarCaptura(PTB8_ADC0_SE11_CH14, &adc_dato);	//inicia lectura por ADC y guarda en variable adc_dato
+    	adc_base_de_tiempos2++;//incrementa base de tiempo para tomar una lectura ADC
+    	if(adc_base_de_tiempos2>10){	// >10 equivale aproximadamente a 2s
+    		adc_base_de_tiempos2=0;	//reinicia contador de tiempo
+    		adc_dato2=0;
+    		SensorTemp=0.0;
+    		adcTomarCaptura(PTB8_ADC0_SE11_CH14, &adc_dato2);	//inicia lectura por ADC y guarda en variable adc_dato
     		//printf("ADC ->");
-    		//printf("PTB8:%d ",adc_dato);	//imprime resultado ADC
+    		//printf("PTB8:%d ",adc_dato2);	//imprime resultado ADC
     		//printf("\r\n");	//Imprime cambio de linea
-    		SensorTemp=(1.1*adc_dato*100.0)/4095.0;
-    		//printf("tempC :%f ", adc_dato);
+    		conv=(1.1*adc_dato2*100)/4096;
+    		SensorTemp= 90-conv;
+    		//printf("temp2C :%d ", adc_dato2);
+    		//printf("temp2C :%d", SensorTemp);
     		//printf("\r\n");
-
-
     	}
-
 #endif
+
     	estado_actual_ec25 = ec25Polling();	//actualiza maquina de estados encargada de avanzar en el proceso interno del MODEM
 
     	switch(estado_actual_ec25){

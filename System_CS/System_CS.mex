@@ -17,10 +17,7 @@
    </preferences>
    <tools>
       <pins name="Pins" version="8.0" enabled="true" update_project_code="true">
-         <generated_project_files>
-            <file path="board/pin_mux.c" update_enabled="true"/>
-            <file path="board/pin_mux.h" update_enabled="true"/>
-         </generated_project_files>
+         <generated_project_files/>
          <pins_profile>
             <processor_version>8.0.1</processor_version>
          </pins_profile>

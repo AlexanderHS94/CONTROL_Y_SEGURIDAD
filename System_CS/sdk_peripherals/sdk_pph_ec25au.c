@@ -69,9 +69,11 @@ const char *ec25_comandos_at[] = {
 		"AT+QIACT=1",
 		"AT+QIACT?",
 		"AT+QMTOPEN=0,\"20.49.0.179\",1883", // direccion ip del servidor
-		"AT+QMTCONN=0,\"modem\"[,\"guest\",\"guest\"]", // suscripcion a
-		"AT+QMTPUB=0,1,1,0,\"1/temperatura\"",
+		"AT+QMTCONN=0,\"modem\"[,\"guest\",\"guest\"]", // suscripcion
+		"AT+QMTSUB=0 ,1,\"1/luz\",1",
+		"AT+QMTPUB=0,1,1,0,\"1/sensor\"",
 		"MENSAJE MQTT", //MENSAJE & CTRL+Z
+		"LUZ 1",
 		"AT+CFUN=0",
 		"AT+CFUN=1",
 		"AT+CSQ", //consulta calidad de la señal RSSI
@@ -93,8 +95,10 @@ const char  *ec25_repuestas_at[]={
 		"1,1,1", //AT+QIACT?
 		"QMTOPEN: 0,0", //AT+QMTOPEN=0,\"20.49.0.179\",1883
 		"QMTCONN: 0,0,0", //AT+QMTCONN=0,\"LAB1\"
+		"QMTSUB: 0,1,0,1",
 		">", //AT+QMTPUB=0,0,0,0,\"LAB1\"
 		"OK", //MENSAJE & CTRL+Z
+		"LED1",
 		"pdpdeact",
 		"OK",
 		"+CSQ:", //AT+CSQ
@@ -144,6 +148,8 @@ void ec25EnviarComandoAT(uint8_t comando){
 status_t ec25ProcesarRespuestaAT(uint8_t comando){
 	status_t resultado_procesamiento;	//variable que almacenará el resultado del procesamiento
 	uint8_t *puntero_ok=0;	//variable temporal que será usada para buscar respuesta
+	//uint8_t *puntero_temp_alta=0;
+
 
 	switch(ec25_fsm.anterior){
 	case kFSM_ENVIANDO_AT:
@@ -151,7 +157,7 @@ status_t ec25ProcesarRespuestaAT(uint8_t comando){
 		puntero_ok = (uint8_t*) (strstr((char*) (&ec25_buffer_rx[0]),(char*) (ec25_repuestas_at[kAT])));
 
 		if(puntero_ok!=0x00){
-			printf("OK\r\n");
+			printf("AT OK\r\n");
 			resultado_procesamiento=kStatus_Success;
 		}else{
 			printf("ERROR AT \r\n");
@@ -303,7 +309,7 @@ status_t ec25ProcesarRespuestaAT(uint8_t comando){
 					(char*) (ec25_repuestas_at[kAT_QIACT])));
 
 			if(puntero_ok!=0x00){
-				printf("OK\r\n");
+				printf("QIACT OK\r\n");
 				resultado_procesamiento=kStatus_Success;
 			}else{
 				printf("ERROR QIACT \r\n");
@@ -317,7 +323,7 @@ status_t ec25ProcesarRespuestaAT(uint8_t comando){
 					(char*) (ec25_repuestas_at[kAT_QMTOPEN])));
 
 			if(puntero_ok!=0x00){
-				printf("OK\r\n");
+				printf("CONEXION MQTT OK\r\n");
 				resultado_procesamiento=kStatus_Success;
 			}else{
 				printf("ERROR DE CONEXION MQTT\r\n");
@@ -331,7 +337,7 @@ status_t ec25ProcesarRespuestaAT(uint8_t comando){
 					(char*) (ec25_repuestas_at[kAT_QMTCONN])));
 
 			if(puntero_ok!=0x00){
-				printf("OK\r\n");
+				printf("QMTCONN OK\r\n");
 				resultado_procesamiento=kStatus_Success;
 			}else{
 				printf("ERROR QMTCONN \r\n");
@@ -339,13 +345,29 @@ status_t ec25ProcesarRespuestaAT(uint8_t comando){
 			}
 			break;
 
+
+	case kFSM_ENVIANDO_QMTSUB_ENCENDIDO_LUZ:
+		puntero_ok = (uint8_t*) (strstr((char*) (&ec25_buffer_rx[0]),
+		(char*) (ec25_repuestas_at[kAT_QMTSUB_ENCENDIDO_LUZ])));
+		printf("%s",&ec25_buffer_rx);
+
+		if(puntero_ok!=0x00){
+		//	printf("RESPUESTA ENCONTRADA OK\r\n");
+			resultado_procesamiento=kStatus_Success;
+		}else{
+			printf("ERROR \r\n");
+			resultado_procesamiento=kStatus_Fail;
+		}
+		break;
+
+
 	case kFSM_ENVIANDO_QMTPUB_T:
 		//Busca palabra EC25 en buffer rx de quectel
 		puntero_ok = (uint8_t*) (strstr((char*) (&ec25_buffer_rx[0]),
 		(char*) (ec25_repuestas_at[kAT_QMTPUB_T])));
 
 				if(puntero_ok!=0x00){
-					printf("OK\r\n");
+				//	printf("QMTPUB_T OK\r\n");
 					resultado_procesamiento=kStatus_Success;
 				}else{
 					printf("ERROR QMTPUB_T\r\n");
@@ -354,17 +376,33 @@ status_t ec25ProcesarRespuestaAT(uint8_t comando){
 				break;
 
 	case kFSM_ENVIANDO_MQTT_MSJ_T:
+
 		//Busca palabra EC25 en buffer rx de quectel
 		puntero_ok = (uint8_t*) (strstr((char*) (&ec25_buffer_rx[0]),
 		(char*) (ec25_repuestas_at[kAT_MQTT_MSJ_T])));
 
-			if(puntero_ok!=0x00){
+		    if(puntero_ok!=0x00){
 				printf("Enviando MJS_T\r\n");
 				resultado_procesamiento=kStatus_Success;
 			}else{
 				printf("ERROR MQTT_MSJ_T \r\n");
 				resultado_procesamiento=kStatus_Fail;
 			}
+/*
+		puntero_temp_alta = (uint8_t*) (strstr((char*) (&ec25_buffer_rx[0]),
+		(char*) (ec25_repuestas_at[kAT_TEMPERATURA_ELEVADA])));
+
+		if(puntero_temp_alta!=0x00){
+   			     printf("temperatura elevada\r\n");
+			     apagarLedVerde();
+				 toggleLedRojo();
+				 apagarLedAzul();
+					}
+
+		else{
+				printf("Error de Comunicacion\r\n");
+
+				}*/
 			break;
 
 
@@ -637,6 +675,15 @@ uint8_t ec25Polling(void){
 		ec25_timeout = 0;	//reset a contador de tiempo
 		break;
 
+	case kFSM_ENVIANDO_QMTSUB_ENCENDIDO_LUZ:
+		ec25BorrarBufferRX();	//limpia buffer para recibir datos de quectel
+		ec25EnviarComandoAT(kAT_QMTSUB_ENCENDIDO_LUZ);	//Envia comando AT+CMGS="3003564960"
+		ec25_fsm.anterior = ec25_fsm.actual;		//almacena el estado actual
+		ec25_fsm.actual = kFSM_ESPERANDO_RESPUESTA;	//avanza a esperar respuesta del modem
+		ec25_timeout = 0;	//reset a contador de tiempo
+		break;
+
+
 	case kFSM_ENVIANDO_QMTPUB_T:
 		ec25BorrarBufferRX(); //limpia buffer para recibir datos de quectel
 		ec25EnviarComandoAT(kAT_QMTPUB_T);
@@ -780,6 +827,11 @@ uint8_t ec25Polling(void){
 							break;
 
 			case kFSM_ENVIANDO_QMTCONN:
+							ec25_fsm.anterior = ec25_fsm.actual;//almacena el estado actual
+			 			    ec25_fsm.actual = kFSM_ENVIANDO_QMTSUB_ENCENDIDO_LUZ;//avanza a enviar nuevo comando al modem
+							break;
+
+			case kFSM_ENVIANDO_QMTSUB_ENCENDIDO_LUZ:
 							ec25_fsm.anterior = ec25_fsm.actual;//almacena el estado actual
 			 			    ec25_fsm.actual = kFSM_ENVIANDO_QMTPUB_T;//avanza a enviar nuevo comando al modem
 							break;
