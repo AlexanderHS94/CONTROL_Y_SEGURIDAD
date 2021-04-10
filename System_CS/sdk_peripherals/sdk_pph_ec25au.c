@@ -411,7 +411,7 @@ status_t ec25ProcesarRespuestaAT(uint8_t comando){
 				 toggleLedAzul();
 					}
 		else{
-				printf("Error de Comunicacion\r\n");
+				printf("CONTROL DE LUZ EN ESPERA\r\n");
 
 				}
 			break;
