@@ -28,7 +28,7 @@ enum _ec25_lista_ordendes{
 	kORDEN_ENVIAR_MENSAJE_MQTT,
 };
 
-#define EC25_BYTES_EN_BUFFER	100
+#define EC25_BYTES_EN_BUFFER	200
 #define EC25_BYTES_EN_BUFFER_MQTT 200
 /*******************************************************************************
  * Private Prototypes
@@ -73,7 +73,8 @@ const char *ec25_comandos_at[] = {
 		"AT+QMTSUB=0 ,1,\"1/luz\",1",
 		"AT+QMTPUB=0,1,1,0,\"1/sensor\"",
 		"MENSAJE MQTT", //MENSAJE & CTRL+Z
-		"LUZ 1",
+		"ENCERDER LED",
+		"APAGAR LED",
 		"AT+CFUN=0",
 		"AT+CFUN=1",
 		"AT+CSQ", //consulta calidad de la señal RSSI
@@ -98,7 +99,8 @@ const char  *ec25_repuestas_at[]={
 		"QMTSUB: 0,1,0,1",
 		">", //AT+QMTPUB=0,0,0,0,\"LAB1\"
 		"OK", //MENSAJE & CTRL+Z
-		"LED1",
+		"true",
+		"false",
 		"pdpdeact",
 		"OK",
 		"+CSQ:", //AT+CSQ
@@ -148,7 +150,8 @@ void ec25EnviarComandoAT(uint8_t comando){
 status_t ec25ProcesarRespuestaAT(uint8_t comando){
 	status_t resultado_procesamiento;	//variable que almacenará el resultado del procesamiento
 	uint8_t *puntero_ok=0;	//variable temporal que será usada para buscar respuesta
-	//uint8_t *puntero_temp_alta=0;
+	uint8_t *puntero_luz_on=0;
+	uint8_t *puntero_luz_off=0;
 
 
 	switch(ec25_fsm.anterior){
@@ -388,21 +391,29 @@ status_t ec25ProcesarRespuestaAT(uint8_t comando){
 				printf("ERROR MQTT_MSJ_T \r\n");
 				resultado_procesamiento=kStatus_Fail;
 			}
-/*
-		puntero_temp_alta = (uint8_t*) (strstr((char*) (&ec25_buffer_rx[0]),
-		(char*) (ec25_repuestas_at[kAT_TEMPERATURA_ELEVADA])));
 
-		if(puntero_temp_alta!=0x00){
-   			     printf("temperatura elevada\r\n");
-			     apagarLedVerde();
-				 toggleLedRojo();
+		puntero_luz_on = (uint8_t*) (strstr((char*) (&ec25_buffer_rx[0]),
+		(char*) (ec25_repuestas_at[kAT_ENCENDER_LUZ])));
+
+		if(puntero_luz_on!=0x00){
+   			     printf("LUZ ENCENDIDA\r\n");
+			     encenderLedVerde();
+				 apagarLedRojo();
 				 apagarLedAzul();
 					}
+		puntero_luz_off = (uint8_t*) (strstr((char*) (&ec25_buffer_rx[0]),
+		(char*) (ec25_repuestas_at[kAT_APAGAR_LUZ])));
 
+		if(puntero_luz_off!=0x00){
+   			     printf("LUZ APAGADA\r\n");
+			     apagarLedVerde();
+				 apagarLedRojo();
+				 toggleLedAzul();
+					}
 		else{
 				printf("Error de Comunicacion\r\n");
 
-				}*/
+				}
 			break;
 
 

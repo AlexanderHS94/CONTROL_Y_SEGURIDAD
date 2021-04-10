@@ -156,13 +156,13 @@ int main(void) {
 
     	case kFSM_RESULTADO_EXITOSO:
     		apagarLedRojo();
-    		toggleLedVerde();
+    		//toggleLedVerde();
     		apagarLedAzul();
     		break;
 
     	case kFSM_RESULTADO_ERROR_RSSI:
     		toggleLedRojo();
-    		apagarLedVerde();
+    		//apagarLedVerde();
     		toggleLedAzul();
     		break;
     	case kFSM_ENVIANDO_MQTT_MSJ_T:
@@ -171,7 +171,7 @@ int main(void) {
 
     	default:
     		apagarLedRojo();
-    		apagarLedVerde();
+    		//apagarLedVerde();
     		toggleLedAzul();
     		break;
 
