@@ -70,7 +70,7 @@ const char *ec25_comandos_at[] = {
 		"AT+QIACT?",
 		"AT+QMTOPEN=0,\"20.49.0.179\",1883", // direccion ip del servidor
 		"AT+QMTCONN=0,\"modem\"[,\"guest\",\"guest\"]", // suscripcion
-		"AT+QMTSUB=0 ,1,\"1/luz\",1",
+		"AT+QMTSUB=0 ,1,\"2/luz\",1",
 		"AT+QMTPUB=0,1,1,0,\"1/sensor\"",
 		"MENSAJE MQTT", //MENSAJE & CTRL+Z
 		"ENCERDER LED",
@@ -398,7 +398,7 @@ status_t ec25ProcesarRespuestaAT(uint8_t comando){
 		if(puntero_luz_on!=0x00){
    			     printf("LUZ ENCENDIDA\r\n");
 			     encenderLedVerde();
-				 apagarLedRojo();
+				 encenderLedRojo();
 				 apagarLedAzul();
 					}
 		puntero_luz_off = (uint8_t*) (strstr((char*) (&ec25_buffer_rx[0]),
