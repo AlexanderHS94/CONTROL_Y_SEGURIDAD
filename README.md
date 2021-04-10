@@ -10,7 +10,7 @@ Caracteristicas del Sistema:
      Le permite al Usuario controlar de forma remota (PC-Celular) el encendido y apagado de las luces de la viviendo o local en el que se implemente el sistema.
 
 - Alarma de Incendio:
-     Genera alertas mediante mensajes de texto al usuario y autoridades correspondiente, dependiendo la gravedad del acontecimiento.
+     Genera alertas mediante la interfaz grafica al usuario y autoridades correspondiente, dependiendo la gravedad del acontecimiento.
 
 
 
