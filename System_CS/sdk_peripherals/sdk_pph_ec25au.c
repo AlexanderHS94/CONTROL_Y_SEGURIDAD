@@ -376,6 +376,29 @@ status_t ec25ProcesarRespuestaAT(uint8_t comando){
 					printf("ERROR QMTPUB_T\r\n");
 					resultado_procesamiento=kStatus_Fail;
 				}
+
+				puntero_luz_on = (uint8_t*) (strstr((char*) (&ec25_buffer_rx[0]),
+				(char*) (ec25_repuestas_at[kAT_ENCENDER_LUZ])));
+
+						if(puntero_luz_on!=0x00){
+				   		//	     printf("LUZ ENCENDIDA\r\n");
+							     encenderLedVerde();
+								 encenderLedRojo();
+								 apagarLedAzul();
+									}
+						puntero_luz_off = (uint8_t*) (strstr((char*) (&ec25_buffer_rx[0]),
+						(char*) (ec25_repuestas_at[kAT_APAGAR_LUZ])));
+
+						if(puntero_luz_off!=0x00){
+				   			    // printf("LUZ APAGADA\r\n");
+							     apagarLedVerde();
+								 apagarLedRojo();
+								 toggleLedAzul();
+									}
+						else{
+							//	printf("CONTROL DE LUZ EN ESPERA\r\n");
+
+								}
 				break;
 
 	case kFSM_ENVIANDO_MQTT_MSJ_T:

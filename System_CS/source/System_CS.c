@@ -163,7 +163,7 @@ int main(void) {
     	case kFSM_RESULTADO_ERROR_RSSI:
     		toggleLedRojo();
     		//apagarLedVerde();
-    		toggleLedAzul();
+    		apagarLedAzul();
     		break;
     	case kFSM_ENVIANDO_MQTT_MSJ_T:
     		lm35sensor(SensorTemp);
@@ -172,7 +172,7 @@ int main(void) {
     	default:
     		apagarLedRojo();
     		//apagarLedVerde();
-    		toggleLedAzul();
+    		apagarLedAzul();
     		break;
 
     	}
